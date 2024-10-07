@@ -1,0 +1,87 @@
+### Constants
+@host = 192.168.0.103
+@user= admin
+@password = admin
+
+### Hardcoded test data
+@projectId = test_project_1
+@buildTypeId = test_build_type_1
+
+### Get token - option 1
+GET http://192.168.0.103:8111/authenticationTest.html?csrf
+Authorization: Basic admin admin
+
+### Get token - option 2
+GET http://admin:admin@192.168.0.103:8111/authenticationTest.html?csrf
+
+
+
+### Get all projects
+GET http://{{user}}:{{password}}@192.168.0.103:8111/app/rest/projects/
+Accept: application/json
+
+### Create project
+# @no-cookie-jar
+POST http://{{user}}:{{password}}@{{host}}:8111/app/rest/projects
+Content-Type: application/json
+Accept: application/json
+
+{
+  "parentProject": {
+    "locator": "_Root"
+  },
+  "name": "{{projectId}}",
+  "id": "{{projectId}}",
+  "copyAllAssociatedSettings": true
+}
+
+### Create build configuration
+# @no-cookie-jar
+POST http://{{user}}:{{password}}@{{host}}:8111/app/rest/buildTypes
+Content-Type: application/json
+Accept: application/json
+
+{
+  "id": "{{buildTypeId}}",
+  "name": "Print hello world",
+  "project": {
+    "id": "{{projectId}}"
+  },
+  "steps": {
+    "step": [
+      {
+        "name": "Print hello world",
+        "type": "simpleRunner",
+        "properties": {
+          "property": [
+            {
+              "name": "script.content",
+              "value": "echo 'Hello World!'"
+            },
+            {
+              "name": "teamcity.step.mode",
+              "value": "default"
+            },
+            {
+              "name": "use.custom.script",
+              "value": "true"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+
+### Run build
+# @no-cookie-jar
+POST http://{{user}}:{{password}}@{{host}}:8111/app/rest/buildQueue
+Content-Type: application/json
+Accept: application/json
+
+{
+  "buildType": {
+    "id": "test_build_type_1"
+  }
+}
+
